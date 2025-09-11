@@ -1,9 +1,7 @@
-import { z } from "zod";
-import { createMcpHandler } from "mcp-handler"; // your src/handler/index.ts default export
 import { Hono } from "hono";
+import { createMcpHandler } from "mcp-handler"; // your src/handler/index.ts default export
 import { withPayment } from "mcpay/handler";
-import { getClient } from "./example/client";
-import { generateText, type Tool } from "ai";
+import { z } from "zod";
 
 const app = new Hono();
 
@@ -45,29 +43,6 @@ const paid = withPayment(base, {
     }
 });
 
-app.get("/client", async (c) => {
-    const client = await getClient()
-
-    const tools = await client.tools() as Record<string, Tool>
-    console.log(tools)
-
-    const response = await generateText({
-        model: "openai/gpt-4o-mini",
-        messages: [{ role: "user", content: "Run paid tool" }],
-        tools: tools,
-        maxRetries: 10,
-        stopWhen: ({steps}) => {
-            if (steps.length > 10) {
-                return true
-            }
-            return false
-        }
-    })
-
-    console.log(response)
-
-    return c.json({ message: "Hello, world!" });
-});
 
 app.use("*", (c) => paid(c.req.raw));
 
