@@ -4,13 +4,13 @@ import { experimental_createMCPClient, generateText, type Tool } from "ai"
 
 export const getClient = async () => {
     // GET PRIVATE KEYS TO SIGN TRANSACTIONS
-    const PRIVATE_KEY = process.env.SENDER_PRIVATE_KEY as `0x${string}`;
-    const SOLANA_SECRET_KEY = process.env.SOLANA_SECRET_KEY as `0x${string}`;
+    const EVM_PRIVATE_KEY = process.env.EVM_PRIVATE_KEY as `0x${string}`;
+    const SOLANA_PRIVATE_KEY = process.env.SOLANA_PRIVATE_KEY as `0x${string}`;
     const MCP_SERVER_URL = "http://localhost:3000/mcp"
 
     // CREATE SIGNERS FOR EVM AND SOLANA
-    const evmSigner = await createSigner("base-sepolia", PRIVATE_KEY);
-    const solanaSigner = await createSigner("solana-devnet", SOLANA_SECRET_KEY);
+    const evmSigner = await createSigner("base-sepolia", EVM_PRIVATE_KEY);
+    const solanaSigner = await createSigner("solana-devnet", SOLANA_PRIVATE_KEY);
 
     const client = await experimental_createMCPClient({
         name: 'example-client',

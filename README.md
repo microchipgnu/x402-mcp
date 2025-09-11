@@ -24,8 +24,8 @@ By default Bun serves on port 3000. The MCP endpoint is `http://localhost:3000/m
 Set required environment variables, then run the client with Bun:
 
 ```bash
-export SENDER_PRIVATE_KEY="0x<your-evm-private-key>"
-export SOLANA_SECRET_KEY="0x<your-solana-secret-key>"
+export EVM_PRIVATE_KEY="0x<your-evm-private-key>"
+export SOLANA_PRIVATE_KEY="<your-solana-secret-key>"
 
 bun run example/client.ts
 ```
