@@ -24,7 +24,6 @@ By default Bun serves on port 3000. The MCP endpoint is `http://localhost:3000/m
 Set required environment variables, then run the client with Bun:
 
 ```bash
-export OPENAI_API_KEY="<your-openai-api-key>"
 export SENDER_PRIVATE_KEY="0x<your-evm-private-key>"
 export SOLANA_SECRET_KEY="0x<your-solana-secret-key>"
 
@@ -34,7 +33,6 @@ bun run example/client.ts
 Notes:
 - Keys must be testnet keys funded on the respective networks (Base Sepolia / Solana Devnet).
 - The client points at `http://localhost:3000/mcp` and will invoke the tools via MCP.
-- The AI model is `openai/gpt-4o-mini` and requires `OPENAI_API_KEY` to be present in the environment.
 
 ## What’s included
 
