@@ -14,7 +14,7 @@ export const getClient = async () => {
 
     const client = await experimental_createMCPClient({
         name: 'example-client',
-        transport: makePaymentAwareClientTransport(MCP_SERVER_URL, { evm: evmSigner, svm: undefined } as unknown as MultiNetworkSigner)
+        transport: makePaymentAwareClientTransport(MCP_SERVER_URL, { evm: evmSigner, svm: solanaSigner } as unknown as MultiNetworkSigner)
     });
 
     return client

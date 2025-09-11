@@ -1,5 +1,5 @@
 {
-  "name": "x402-mcp-micro",
+  "name": "x402-mcp",
   "module": "index.ts",
   "type": "module",
   "private": true,
