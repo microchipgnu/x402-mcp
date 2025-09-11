@@ -2,6 +2,8 @@
 
 Minimal paid MCP server using Hono + x402 payments, with an example MCP client. It demonstrates how to expose tools over the Model Context Protocol (MCP) and gate specific tools behind on-chain payment using `mcpay`.
 
+![](/image.png)
+
 ### Features
 - **MCP server with Hono**: export a `fetch` handler Bun can serve by default.
 - **Payment-gated tools**: enforce pricing via `mcpay` with EVM and Solana addresses.
