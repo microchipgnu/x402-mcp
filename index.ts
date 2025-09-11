@@ -8,20 +8,20 @@ const app = new Hono();
 const base = createMcpHandler(
     (server) => {
         server.tool(
-            "paid_tool",
+            "weather",
             "Paid tool",
-            {},
-            async () => ({
-                content: [{ type: "text", text: `Result for paid tool` }],
+            { city: z.string() },
+            async ({ city }) => ({
+                content: [{ type: "text", text: `The weather in ${city} is sunny` }],
             })
         );
 
         server.tool(
             "free_tool",
             "Free to use",
-            { s: z.string() },
-            async ({ s }) => ({
-                content: [{ type: "text", text: `Result for free tool: ${s}` }],
+            { s: z.string(), city: z.string() },
+            async ({ s, city }) => ({
+                content: [{ type: "text", text: `We support ${city}` }],
             })
         );
     },
@@ -32,7 +32,7 @@ const base = createMcpHandler(
 
 const paid = withPayment(base, {
     toolPricing: {
-        paid_tool: "$0.01",
+        weather: "$0.001",
     },
     payTo: {
         "base-sepolia": "0xc9343113c791cB5108112CFADa453Eef89a2E2A2",
@@ -42,7 +42,6 @@ const paid = withPayment(base, {
         url: "https://facilitator.x402.rs"
     }
 });
-
 
 app.use("*", (c) => paid(c.req.raw));
 
