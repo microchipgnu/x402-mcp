@@ -1,16 +1,17 @@
 import { Hono } from "hono";
-import { createMcpHandler } from "mcp-handler"; // your src/handler/index.ts default export
-import { withPayment } from "mcpay/handler";
+import { createMcpPaidHandler } from "mcpay/handler";
 import { z } from "zod";
 
 const app = new Hono();
 
-const base = createMcpHandler(
+const handler = createMcpPaidHandler(
     (server) => {
-        server.tool(
+        server.paidTool(
             "weather",
             "Paid tool",
+            "$0.001",
             { city: z.string() },
+            {},
             async ({ city }) => ({
                 content: [{ type: "text", text: `The weather in ${city} is sunny` }],
             })
@@ -26,23 +27,20 @@ const base = createMcpHandler(
         );
     },
     {
+        facilitator: {
+            url: "https://facilitator.x402.rs"
+        },
+        recipient: {
+            "evm": {address: "0xc9343113c791cB5108112CFADa453Eef89a2E2A2", isTestnet: true},
+            "svm": {address: "4VQeAqyPxR9pELndskj38AprNj1btSgtaCrUci8N4Mdg", isTestnet: true}
+        }
+    },
+    {
         serverInfo: { name: "paid-mcp", version: "1.0.0" },
     },
 );
 
-const paid = withPayment(base, {
-    toolPricing: {
-        weather: "$0.001",
-    },
-    payTo: {
-        "base-sepolia": "0xc9343113c791cB5108112CFADa453Eef89a2E2A2",
-        "solana-devnet": "4VQeAqyPxR9pELndskj38AprNj1btSgtaCrUci8N4Mdg"
-    },
-    facilitator: {
-        url: "https://facilitator.x402.rs"
-    }
-});
 
-app.use("*", (c) => paid(c.req.raw));
+app.use("*", (c) => handler(c.req.raw));
 
 export default app;
