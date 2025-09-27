@@ -6,15 +6,18 @@ const app = new Hono();
 
 const handler = createMcpPaidHandler(
     (server) => {
+
         server.paidTool(
             "weather",
             "Paid tool",
             "$0.001",
             { city: z.string() },
             {},
-            async ({ city }) => ({
-                content: [{ type: "text", text: `The weather in ${city} is sunny` }],
-            })
+            async ({ city }) => {
+                return {
+                    content: [{ type: "text", text: `The weather in ${city} is sunny` }],
+                }
+            }
         );
 
         server.tool(

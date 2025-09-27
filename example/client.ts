@@ -1,7 +1,7 @@
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
 import { withX402Client } from "mcpay/client";
-import { createSigner, isEvmSignerWallet, isSvmSignerWallet } from "x402/types";
+import { createSigner, isEvmSignerWallet, isSvmSignerWallet, SupportedEVMNetworks, SupportedSVMNetworks } from "x402/types";
 
 
 export const getClient = async () => {
@@ -10,8 +10,8 @@ export const getClient = async () => {
     version: "1.0.0",
   });
 
-  const EVM_PRIVATE_KEY = process.env.EVM_PRIVATE_KEY as `0x${string}`;
-  const SOLANA_PRIVATE_KEY = process.env.SOLANA_PRIVATE_KEY as `0x${string}`;
+  const EVM_PRIVATE_KEY = process.env.EVM_PRIVATE_KEY as string;
+  const SOLANA_PRIVATE_KEY = process.env.SOLANA_PRIVATE_KEY as string;
   const MCP_SERVER_URL = "http://localhost:3000/mcp"
 
   const transport = new StreamableHTTPClientTransport(new URL(MCP_SERVER_URL));
@@ -20,37 +20,57 @@ export const getClient = async () => {
   await client.connect(transport);
 
   const evmSigner = await createSigner("base-sepolia", EVM_PRIVATE_KEY);
-  const svmSigner = await createSigner("solana-devnet", SOLANA_PRIVATE_KEY);
-
   if (!isEvmSignerWallet(evmSigner)) {
     throw new Error("Failed to create EVM signer");
   }
+
+  const svmSigner = await createSigner("solana-devnet", SOLANA_PRIVATE_KEY);
+
   if (!isSvmSignerWallet(svmSigner)) {
     throw new Error("Failed to create SVM signer");
   }
 
   return withX402Client(client, {
     wallet: {
-      evm: evmSigner,
-      svm: svmSigner
+        evm: evmSigner,
+        svm: svmSigner
     },
     confirmationCallback: async (payment) => {
-        return true
+      const readline = await import("readline");
+
+      console.log("Payment available on the following networks:");
+      payment.forEach(payment => {
+        console.log("-", payment.network, payment.maxAmountRequired, payment.asset);
+      });
+
+      const rl = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout,
+      });
+
+      return new Promise((resolve) => {
+        rl.question("Type the network to confirm payment: ", (answer: string) => {
+          rl.close();
+          if(SupportedEVMNetworks.includes(answer as typeof SupportedEVMNetworks[number])) {
+            resolve(true);
+          }
+          if(SupportedSVMNetworks.includes(answer as typeof SupportedSVMNetworks[number])) {
+            resolve(true);
+          }
+          resolve(false);
+        });
+      });
     }
   });
 };
 
 export const getClientResponse = async () => {
   const client = await getClient();
-
-  const tools = await client.listTools();
-  console.log("Tools:", JSON.stringify(tools, null, 2));
-
   // ✅ Correct overload: (name: string, args?: Record<string, unknown>)
   const res = await client.callTool({
-    name: "hello",
+    name: "weather",
     arguments: {
-      name: "Yo"
+      city: "Tokyo"
     },
   });
   return res;
