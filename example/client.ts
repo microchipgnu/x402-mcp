@@ -3,7 +3,6 @@ import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/
 import { withX402Client } from "mcpay/client";
 import { createSigner, isEvmSignerWallet, isSvmSignerWallet, SupportedEVMNetworks, SupportedSVMNetworks } from "x402/types";
 
-
 export const getClient = async () => {
   const client = new Client({
     name: "example-client",
@@ -39,6 +38,7 @@ export const getClient = async () => {
       const readline = await import("readline");
 
       console.log("Payment available on the following networks:");
+      console.log(payment)
       payment.forEach(payment => {
         console.log("-", payment.network, payment.maxAmountRequired, payment.asset);
       });
@@ -52,10 +52,10 @@ export const getClient = async () => {
         rl.question("Type the network to confirm payment: ", (answer: string) => {
           rl.close();
           if(SupportedEVMNetworks.includes(answer as typeof SupportedEVMNetworks[number])) {
-            resolve(true);
+            resolve({network: answer as typeof SupportedEVMNetworks[number]});
           }
           if(SupportedSVMNetworks.includes(answer as typeof SupportedSVMNetworks[number])) {
-            resolve(true);
+            resolve({network: answer as typeof SupportedSVMNetworks[number]});
           }
           resolve(false);
         });
